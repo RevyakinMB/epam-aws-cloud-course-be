@@ -1,8 +1,9 @@
 export type Product = {
     id: number;
-    name: string;
-    description: string;
-    price: number;
+	title: string;
+	description: string;
+	price: number;
+	count: number;
 };
 
 export type MockedEmployee = {

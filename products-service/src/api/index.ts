@@ -9,10 +9,11 @@ export const getMockedProducts = async () => {
     const products: Product[] = response.data.map(
         ({ id, firstName, lastName, salary, contactNumber }) => ({
             id,
-            name: `${firstName} ${lastName}`,
+            title: `${firstName} ${lastName}`,
             description: contactNumber,
             price: salary,
-        })
+            count: 5,
+        }),
     );
     return products;
 };
