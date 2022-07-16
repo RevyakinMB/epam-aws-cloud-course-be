@@ -1,0 +1,11 @@
+{
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": {
+    "skipDataProvider": true
+  },
+  "pathParameters": {
+    "productId": "2"
+  }
+}
