@@ -14,4 +14,3 @@ module.exports = {
         "^.+\\.js$": "babel-jest",
     },
 };
-  
