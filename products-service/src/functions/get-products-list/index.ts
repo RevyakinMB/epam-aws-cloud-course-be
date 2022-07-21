@@ -7,6 +7,17 @@ export default {
       http: {
         method: 'get',
         path: 'products',
+        responseData: {
+          200: 'Regular response',
+          500: 'Internal server error',
+        },
+        queryStringParameters: {
+          skipDataProvider: {
+            type: 'string',
+            required: false,
+            description: 'An option to skip dummy data provider',
+          },
+        },
       },
     },
   ],

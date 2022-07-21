@@ -33,7 +33,7 @@ describe('get-product-by-id', () => {
     it('should avoid data provider if skipDataProvider query param is provided', async () => {
         const event = {
             queryStringParameters: {
-                skipDataProvider: true,
+                skipDataProvider: 'skipDataProvider',
             },
         };
         const result = await getProductsList(event);

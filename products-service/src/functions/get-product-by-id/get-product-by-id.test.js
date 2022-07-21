@@ -46,7 +46,7 @@ describe('get-product-by-id', () => {
         const event = {
             pathParameters: { productId: defaultProducts[0].id },
             queryStringParameters: {
-                skipDataProvider: true,
+                skipDataProvider: 'skipDataProvider',
             },
         };
         const result = await getProductById(event);

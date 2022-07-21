@@ -3,7 +3,7 @@
     "Content-Type": "application/json"
   },
   "queryStringParameters": {
-    "skipDataProvider": true
+    "skipDataProvider": "skipDataProvider"
   },
   "pathParameters": {
     "productId": "2"

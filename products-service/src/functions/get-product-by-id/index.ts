@@ -7,6 +7,19 @@ export default {
       http: {
         method: 'get',
         path: '/products/{productId}',
+        responseData: {
+          200: 'Regular response',
+          400: 'No product id provided',
+          404: 'Product not found',
+          500: 'Internal server error',
+        },
+        queryStringParameters: {
+          skipDataProvider: {
+            type: 'boolean',
+            required: false,
+            description: 'An option to skip dummy data provider',
+          },
+        },
       },
     },
   ],
