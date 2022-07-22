@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "driver": "pg",
+    "user": "postgres",
+    "password": "DB_PASSWORD",
+    "host": "DB_ENDPOINT",
+    "database": "DB_NAME",
+    "port": "5432"
+  },
+  "sql-file": true
+}
