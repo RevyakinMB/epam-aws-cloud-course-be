@@ -13,3 +13,5 @@ swagger
 
 db-migrations/configs/*
 !db-migrations/configs/default.json
+
+env.serverless.ts
