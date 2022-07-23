@@ -1,1 +1,1 @@
-export { getProduct, getProducts } from './products-data';
+export { createNewProduct, getProduct, getProducts } from './products-data';

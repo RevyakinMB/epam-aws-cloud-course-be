@@ -40,14 +40,36 @@ export const query = async <T>(sql: string, params: Array<string | number | null
     await createPool();
   }
 
-  const connection = await pool.connect();
   try {
-    const response = await connection.query<T>(sql, params);
+    const response = await pool.query<T>(sql, params);
     return response;
   } catch (err) {
     console.error(err);
     throw new Error('sql query error.');
+  }
+};
+
+export const execInTx = async(txFn) => {
+  if (!pool) {
+    await createPool();
+  }
+
+  const tx = await pool.connect();
+  try {
+    await tx.query(`begin`);
+    const response = await txFn(tx);
+    await tx.query(`commit`);
+
+    return response;
+  } catch (err) {
+    console.error(err);
+    try {
+      await tx.query(`rollback`);
+    } catch (rollbackErr) {
+      console.error(rollbackErr);
+    }
+    throw new Error('sql query error.');
   } finally {
-    connection.release();
+    tx.release();
   }
 };

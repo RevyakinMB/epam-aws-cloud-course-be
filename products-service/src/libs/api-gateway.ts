@@ -4,18 +4,18 @@ import type { FromSchema } from 'json-schema-to-ts';
 type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'> & { body: FromSchema<S> }
 export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<ValidatedAPIGatewayProxyEvent<S>, APIGatewayProxyResult>
 
-const corsHeaders = {
+const CORS_HEADERS = {
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': '*',
   },
 };
 
-export const formatJSONResponse = (response: Record<string, unknown>) => {
+export const formatJSONResponse = (response: Record<string, unknown>, statusCode: number = 200) => {
   return {
     body: JSON.stringify(response),
-    ...corsHeaders,
-    statusCode: 200,
+    ...CORS_HEADERS,
+    statusCode,
   };
 };
 
@@ -25,7 +25,7 @@ export const formatJSONErrorResponse = (
 ) => {
   return {
     body: JSON.stringify({ message }),
-    ...corsHeaders,
+    ...CORS_HEADERS,
     statusCode,
   };
 };

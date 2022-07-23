@@ -5,3 +5,5 @@ export type Product = {
     price: number;
     count: number;
 };
+
+export type ProductPayload = Partial<Omit<Product, 'id' | 'count'>>;
