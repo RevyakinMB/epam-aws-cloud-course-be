@@ -1,5 +1,5 @@
 import { getProductsList } from './handler';
-import { getClient } from '@src/db';
+import { getProducts } from '@src/data';
 
 const products = [
     { id: '1001', title: 'P1001', description: '', price: 199.9, count: 2 },
@@ -12,7 +12,11 @@ jest.mock('@libs/api-gateway', () => ({
 }));
 
 jest.mock('@src/db', () => ({
-    getClient: jest.fn(),
+    end: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('@src/data', () => ({
+    getProducts: jest.fn(),
 }));
 
 describe('get-product-by-id', () => {
@@ -21,10 +25,7 @@ describe('get-product-by-id', () => {
     });
 
     it('should return list of products', async () => {
-        getClient.mockReturnValue(Promise.resolve({
-            query: () => Promise.resolve({ rows: products }),
-            end: () => Promise.resolve(),
-        }));
+        getProducts.mockReturnValue(Promise.resolve(products));
         const result = await getProductsList();
         expect(result).toEqual({
             data: products,
@@ -32,17 +33,8 @@ describe('get-product-by-id', () => {
         });
     });
 
-    it('should return 500 error code on database connection failure', async () => {
-        getClient.mockReturnValue(Promise.resolve({
-            query: () => Promise.reject({ message: 'sql query error' }),
-            end: () => Promise.resolve(),
-        }));
-        const result = await getProductsList();
-        expect(result).toEqual(500);
-    });
-
     it('should return 500 error code on database query failure', async () => {
-        getClient.mockReturnValue(Promise.reject({ errno: -4078 }));
+        getProducts.mockReturnValue(Promise.reject({ message: 'sql query error' }));
         const result = await getProductsList();
         expect(result).toEqual(500);
     });
