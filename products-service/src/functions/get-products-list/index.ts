@@ -8,7 +8,10 @@ export default {
         method: 'get',
         path: 'products',
         responseData: {
-          200: 'Regular response',
+          200: {
+            description: 'Regular response',
+            bodyType: 'ProductListResponse',
+          },
           500: 'Internal server error',
         },
       },

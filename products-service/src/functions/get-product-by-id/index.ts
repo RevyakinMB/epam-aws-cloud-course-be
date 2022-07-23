@@ -8,7 +8,10 @@ export default {
         method: 'get',
         path: '/products/{productId}',
         responseData: {
-          200: 'Regular response',
+          200: {
+            description: 'Regular response',
+            bodyType: 'Product',
+          },
           400: 'No product id provided',
           404: 'Product not found',
           500: 'Internal server error',

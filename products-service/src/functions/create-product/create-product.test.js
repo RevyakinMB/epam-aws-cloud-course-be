@@ -1,4 +1,4 @@
-import { createProduct } from './handler';
+import { main } from './handler';
 import { createNewProduct } from '@src/data';
 import { HttpError } from '@src/utils/errors';
 
@@ -27,17 +27,8 @@ describe('createProduct', () => {
       body: JSON.stringify(product),
     }
     createNewProduct.mockReturnValue(Promise.resolve());
-    const result = await createProduct(event);
+    const result = await main(event);
     expect(result).toEqual(201);
-  });
-
-  it('should return 400 status code on invalid body JSON string', async () => {
-    const event = {
-      body: '{{Non JSON string}}',
-    };
-    createNewProduct.mockReturnValue(Promise.resolve());
-    const result = await createProduct(event);
-    expect(result).toEqual(400);
   });
 
   it('should return 400 status code on invalid product payload', async () => {
@@ -45,7 +36,7 @@ describe('createProduct', () => {
       body: JSON.stringify({ ...product, title: '' }),
     };
     createNewProduct.mockReturnValue(Promise.reject(new HttpError(400, 'Error')));
-    const result = await createProduct(event);
+    const result = await main(event);
     expect(result).toEqual(400);
   });
 
@@ -54,7 +45,7 @@ describe('createProduct', () => {
       body: JSON.stringify(product),
     };
     createNewProduct.mockReturnValue(Promise.reject('An error.'));
-    const result = await createProduct(event);
+    const result = await main(event);
     expect(result).toEqual(500);
   });
 });

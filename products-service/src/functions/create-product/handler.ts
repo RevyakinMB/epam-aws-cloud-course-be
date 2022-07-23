@@ -1,22 +1,15 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
-
+import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
+import { middyfy } from '@libs/lambda';
 import { formatJSONResponse, formatJSONErrorResponse } from '@libs/api-gateway';
 import { createNewProduct } from '@src/data';
 import { end } from '@src/db';
-import { ProductPayload } from '@src/types/product';
 import { HttpError } from '@src/utils/errors';
 
-export const createProduct: APIGatewayProxyHandler = async (event) => {
-  let product: ProductPayload;
-  try {
-    product = JSON.parse(event.body);
-  } catch (err) {
-    console.error(err);
-    return formatJSONErrorResponse(400, 'Invalid request.');
-  }
+import schema from './schema';
 
+const createProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
-    await createNewProduct(product);
+    await createNewProduct(event.body);
   } catch (err) {
     if (err instanceof HttpError && err.statusCode === 400) {
       return formatJSONErrorResponse(400, 'Invalid request.');
@@ -30,3 +23,5 @@ export const createProduct: APIGatewayProxyHandler = async (event) => {
 
   return formatJSONResponse({ success: true }, 201);
 };
+
+export const main = middyfy(createProduct);
