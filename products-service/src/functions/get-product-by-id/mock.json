@@ -3,6 +3,6 @@
     "Content-Type": "application/json"
   },
   "pathParameters": {
-    "productId": "2"
+    "productId": "164f8ac9-051a-4310-8485-3bef23f5d097"
   }
 }

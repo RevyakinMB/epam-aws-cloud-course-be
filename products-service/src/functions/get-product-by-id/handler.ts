@@ -1,6 +1,8 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 
 import { formatJSONResponse, formatJSONErrorResponse } from '@libs/api-gateway';
+import { getProduct } from '@src/data';
+import { end } from '@src/db';
 import { Product } from '@src/types/product';
 
 export const getProductById: APIGatewayProxyHandler = async (event) => {
@@ -9,19 +11,18 @@ export const getProductById: APIGatewayProxyHandler = async (event) => {
     return formatJSONErrorResponse(400, 'No product id provided.');
   }
 
-  let products: Product[];
+  let product: Product | null = null;
   try {
-    products = [];
+    product = await getProduct(productId);
   } catch (err) {
-    return formatJSONErrorResponse(
-      err.code || 500,
-      err.message || 'An error occurred during data loading.',
-    );
+    console.error(err);
+    return formatJSONErrorResponse(500, 'An error occurred during data loading.');
+  } finally {
+    end().catch((e) => console.error(e));
   }
 
-  const product = products.find(({ id }) => productId === id);
   if (!product) {
-    return formatJSONErrorResponse(404, 'Product not found');
+    return formatJSONErrorResponse(404, 'Product not found.');
   }
   return formatJSONResponse(product);
 };
