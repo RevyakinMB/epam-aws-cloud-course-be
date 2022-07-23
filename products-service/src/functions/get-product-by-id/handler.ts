@@ -1,8 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 
-import { defaultProducts, getProducts } from '@api/index';
 import { formatJSONResponse, formatJSONErrorResponse } from '@libs/api-gateway';
-import { Product } from '@ptypes/product';
+import { Product } from '@src/types/product';
 
 export const getProductById: APIGatewayProxyHandler = async (event) => {
   const { productId } = event.pathParameters || {};
@@ -11,18 +10,13 @@ export const getProductById: APIGatewayProxyHandler = async (event) => {
   }
 
   let products: Product[];
-  const { skipDataProvider } = event.queryStringParameters || {};
-  if (skipDataProvider) {
-    products = defaultProducts;
-  } else {
-    try {
-      products = await getProducts();
-    } catch (err) {
-      return formatJSONErrorResponse(
-        err.code || 500,
-        err.message || 'An error occurred during data loading.',
-      );
-    }
+  try {
+    products = [];
+  } catch (err) {
+    return formatJSONErrorResponse(
+      err.code || 500,
+      err.message || 'An error occurred during data loading.',
+    );
   }
 
   const product = products.find(({ id }) => productId === id);

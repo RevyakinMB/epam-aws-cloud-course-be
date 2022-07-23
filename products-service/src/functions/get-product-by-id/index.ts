@@ -13,13 +13,6 @@ export default {
           404: 'Product not found',
           500: 'Internal server error',
         },
-        queryStringParameters: {
-          skipDataProvider: {
-            type: 'boolean',
-            required: false,
-            description: 'An option to skip dummy data provider',
-          },
-        },
       },
     },
   ],

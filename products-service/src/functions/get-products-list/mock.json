@@ -1,8 +1,5 @@
 {
   "headers": {
     "Content-Type": "application/json"
-  },
-  "queryStringParameters": {
-    "skipDataProvider": "skipDataProvider"
   }
 }

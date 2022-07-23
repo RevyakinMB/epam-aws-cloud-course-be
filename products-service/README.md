@@ -9,7 +9,7 @@ Create `env.serverless.ts` file, use it to export db connection settings:
 ```
 export const serverlessDbEnvConfiguration: AwsLambdaEnvironment = {
   PG_HOST: 'HOST',
-  PH_PORT: 5432,
+  PG_PORT: 5432,
   PG_DATABASE: 'DB',
   PG_USERNAME: 'USERNAME',
   PG_PASSWORD: 'PASSWORD',
