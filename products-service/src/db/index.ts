@@ -1,5 +1,7 @@
 import { PoolConfig, Pool } from 'pg';
 
+import logger from '@src/utils/logger';
+
 let pool: Pool;
 
 const createPool = () => {
@@ -23,7 +25,7 @@ const createPool = () => {
   pool = new Pool(connectionConfig);
 
   pool.on('error', (e) => {
-    console.error('Unexpected error on idle client', e);
+    logger.error('Unexpected error on idle client', e);
     process.exit(-1);
   });
 };
@@ -46,7 +48,7 @@ export const query = async <T>(sql: string, params: Array<string | number | null
     const response = await pool.query<T>(sql, params);
     return response;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     throw new Error('sql query error.');
   }
 };
@@ -64,11 +66,11 @@ export const execInTx = async(txFn) => {
 
     return response;
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     try {
       await tx.query(`rollback`);
     } catch (rollbackErr) {
-      console.error(rollbackErr);
+      logger.error(rollbackErr);
     }
     throw new Error('sql query error.');
   } finally {

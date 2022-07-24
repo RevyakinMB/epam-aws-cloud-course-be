@@ -4,9 +4,11 @@ import { formatJSONResponse, formatJSONErrorResponse } from '@libs/api-gateway';
 import { getProduct } from '@src/data';
 import { end } from '@src/db';
 import { Product } from '@src/types/product';
+import logger from '@src/utils/logger';
 
 export const getProductById: APIGatewayProxyHandler = async (event) => {
   const { productId } = event.pathParameters || {};
+  logger.log(`getProductById fired, productId = ${productId}.`);
   if (!productId) {
     return formatJSONErrorResponse(400, 'No product id provided.');
   }
@@ -15,10 +17,10 @@ export const getProductById: APIGatewayProxyHandler = async (event) => {
   try {
     product = await getProduct(productId);
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     return formatJSONErrorResponse(500, 'An error occurred during data loading.');
   } finally {
-    end().catch((e) => console.error(e));
+    end().catch((e) => logger.error(e));
   }
 
   if (!product) {
