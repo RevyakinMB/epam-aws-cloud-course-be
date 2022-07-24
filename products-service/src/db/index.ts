@@ -30,7 +30,9 @@ const createPool = () => {
 
 export const end = () => {
   if (pool) {
-    return pool.end();
+    return pool.end().then(() => {
+      pool = undefined;
+    });
   }
   return Promise.resolve();
 }
