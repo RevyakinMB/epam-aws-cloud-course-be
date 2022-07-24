@@ -1,6 +1,6 @@
 // used by autoswagger serverless plugin
 
-// re-exporting from ./product doesn't seem to work for the plugin 
+// re-exporting from ./product doesn't seem to work for the plugin
 export type Product = {
   id: string;
   title: string;

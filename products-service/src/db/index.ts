@@ -9,7 +9,9 @@ const createPool = () => {
     throw new Error('Connection pool is already created.');
   }
 
-  const { PG_HOST, PG_PORT, PG_DATABASE, PG_USERNAME, PG_PASSWORD } = process.env;
+  const {
+    PG_HOST, PG_PORT, PG_DATABASE, PG_USERNAME, PG_PASSWORD,
+  } = process.env;
   const connectionConfig: PoolConfig = {
     host: PG_HOST,
     port: parseInt(PG_PORT, 10),
@@ -37,7 +39,7 @@ export const end = () => {
     });
   }
   return Promise.resolve();
-}
+};
 
 export const query = async <T>(sql: string, params: Array<string | number | null> = []) => {
   if (!pool) {
@@ -53,22 +55,22 @@ export const query = async <T>(sql: string, params: Array<string | number | null
   }
 };
 
-export const execInTx = async(txFn) => {
+export const execInTx = async (txFn) => {
   if (!pool) {
     await createPool();
   }
 
   const tx = await pool.connect();
   try {
-    await tx.query(`begin`);
+    await tx.query('begin');
     const response = await txFn(tx);
-    await tx.query(`commit`);
+    await tx.query('commit');
 
     return response;
   } catch (err) {
     logger.error(err);
     try {
-      await tx.query(`rollback`);
+      await tx.query('rollback');
     } catch (rollbackErr) {
       logger.error(rollbackErr);
     }

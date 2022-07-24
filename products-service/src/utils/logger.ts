@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const JEST = !!process.env.TS_JEST;
 
 export default {

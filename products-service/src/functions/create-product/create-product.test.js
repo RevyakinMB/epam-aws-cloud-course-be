@@ -1,8 +1,10 @@
-import { main } from './handler';
 import { createNewProduct } from '@src/data';
 import { HttpError } from '@src/utils/errors';
+import { main } from './handler';
 
-const product = { id: '1001', title: 'P1001', description: '', price: 199.9, count: 2 };
+const product = {
+  id: '1001', title: 'P1001', description: '', price: 199.9, count: 2,
+};
 
 jest.mock('@libs/api-gateway', () => ({
   formatJSONResponse: jest.fn((data, statusCode) => statusCode),
@@ -25,7 +27,7 @@ describe('createProduct', () => {
   it('should return 201 status code if provided valid input', async () => {
     const event = {
       body: JSON.stringify(product),
-    }
+    };
     createNewProduct.mockReturnValue(Promise.resolve());
     const result = await main(event);
     expect(result).toEqual(201);
@@ -44,7 +46,7 @@ describe('createProduct', () => {
     const event = {
       body: JSON.stringify(product),
     };
-    createNewProduct.mockReturnValue(Promise.reject('An error.'));
+    createNewProduct.mockReturnValue(Promise.reject(new Error('An error.')));
     const result = await main(event);
     expect(result).toEqual(500);
   });

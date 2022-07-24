@@ -11,8 +11,7 @@ export const getProducts = async () => {
       pr.price,
       st.count
     from products pr
-    join stocks st on st.product_id = pr.id`,
-  );
+    join stocks st on st.product_id = pr.id`);
   return response.rows;
 };
 
