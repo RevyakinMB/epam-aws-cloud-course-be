@@ -1,6 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import type { AWS } from '@serverless/typescript';
 
+import importFileParser from '@src/functions/import-file-parser';
 import importProductsFile from '@src/functions/import-products-file';
 
 const serverlessConfiguration: AWS = {
@@ -28,6 +29,9 @@ const serverlessConfiguration: AWS = {
         statements: [{
           Effect: 'Allow',
           Action: [
+            's3:CopyObject',
+            's3:DeleteObject',
+            's3:GetObject',
             's3:PutObject',
           ],
           Resource: {
@@ -44,7 +48,10 @@ const serverlessConfiguration: AWS = {
       },
     },
   },
-  functions: { importProductsFile },
+  functions: {
+    importFileParser,
+    importProductsFile,
+  },
   package: { individually: true },
   custom: {
     s3BucketName: 'epam-clouddevcourse-products',

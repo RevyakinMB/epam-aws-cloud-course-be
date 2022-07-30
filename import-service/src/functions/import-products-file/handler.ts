@@ -6,7 +6,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { formatJSONResponse, formatJSONErrorResponse } from '@libs/api-gateway';
 import { getS3Client } from '@libs/s3-client';
 import logger from '@src/utils/logger';
-import { SIGNED_URL_EXPIRES_IN } from './constants';
+import { SIGNED_URL_EXPIRES_IN } from '@functions/constants';
 import { getObjectName } from './helpers';
 
 export const importProductsFile: APIGatewayProxyHandler = async (event) => {
