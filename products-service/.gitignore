@@ -8,4 +8,10 @@ jspm_packages
 # esbuild directories
 .esbuild
 
+# swagger plugin generated directory
 swagger
+
+db-migrations/configs/*
+!db-migrations/configs/default.json
+
+env.serverless.ts

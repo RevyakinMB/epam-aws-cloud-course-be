@@ -1,7 +1,10 @@
 import type { AWS } from '@serverless/typescript';
 
+import createProduct from '@functions/create-product';
 import getProductsList from '@functions/get-products-list';
 import getProductById from '@functions/get-product-by-id';
+
+import { serverlessDbEnvConfiguration } from './env.serverless';
 
 const serverlessConfiguration: AWS = {
   service: 'products-service',
@@ -22,10 +25,11 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      ...serverlessDbEnvConfiguration,
     },
   },
-  // import the function via paths
   functions: {
+    createProduct,
     getProductById,
     getProductsList,
   },
@@ -35,16 +39,18 @@ const serverlessConfiguration: AWS = {
       bundle: true,
       minify: false,
       sourcemap: true,
-      exclude: ['aws-sdk'],
+      exclude: [
+        'aws-sdk',
+        'pg-native',
+      ],
       target: 'node14',
       define: { 'require.resolve': undefined },
       platform: 'node',
       concurrency: 10,
     },
     autoswagger: {
-      typefiles: [],
       basePath: '/dev',
-      host: 'vzxop304db.execute-api.eu-west-1.amazonaws.com'
+      host: 'vzxop304db.execute-api.eu-west-1.amazonaws.com',
     },
   },
 };

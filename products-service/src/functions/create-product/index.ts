@@ -1,17 +1,17 @@
 import { handlerPath } from '@libs/handler-resolver';
 
 export default {
-  handler: `${handlerPath(__dirname)}/handler.getProductsList`,
+  handler: `${handlerPath(__dirname)}/handler.main`,
   events: [
     {
       http: {
-        method: 'get',
+        method: 'post',
+        cors: true,
         path: 'products',
+        bodyType: 'ProductRequestBody',
         responseData: {
-          200: {
-            description: 'Regular response',
-            bodyType: 'ProductListResponse',
-          },
+          201: 'A new product created',
+          400: 'Invalid product data',
           500: 'Internal server error',
         },
       },

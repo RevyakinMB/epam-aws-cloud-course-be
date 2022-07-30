@@ -1,24 +1,23 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { APIGatewayProxyHandler } from 'aws-lambda';
 
-import { getProducts, defaultProducts } from '@api/index';
 import { formatJSONResponse, formatJSONErrorResponse } from '@libs/api-gateway';
-import { Product } from '@ptypes/product';
+import { getProducts } from '@src/data';
+import { end } from '@src/db';
+import { Product } from '@src/types/product';
+import logger from '@src/utils/logger';
 
-export const getProductsList: APIGatewayProxyHandler = async (event) => {
-  // an escape hatch for the case when dummy data provider refuses to work
-  const { skipDataProvider } = event.queryStringParameters || {};
-  if (skipDataProvider) {
-    return formatJSONResponse({
-      data: defaultProducts,
-      count: defaultProducts.length,
-    });
-  }
-
+export const getProductsList: APIGatewayProxyHandler = async () => {
+  logger.log('getProductsList fired.');
   let products: Product[];
+
   try {
     products = await getProducts();
   } catch (err) {
-    return formatJSONErrorResponse(500, err.message || 'An error occurred during data loading.');
+    logger.error(err);
+    return formatJSONErrorResponse(500, 'An error occurred during data loading.');
+  } finally {
+    end().catch((e) => logger.error(e));
   }
 
   return formatJSONResponse({

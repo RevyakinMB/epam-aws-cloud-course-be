@@ -6,12 +6,4 @@ export type Product = {
     count: number;
 };
 
-export type MockedEmployee = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    contactNumber: string;
-    age: number;
-    dob: string;
-    salary: number;
-};
+export type ProductPayload = Omit<Product, 'id' | 'count'>;

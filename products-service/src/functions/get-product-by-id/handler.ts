@@ -1,33 +1,31 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { APIGatewayProxyHandler } from 'aws-lambda';
 
-import { defaultProducts, getProducts } from '@api/index';
 import { formatJSONResponse, formatJSONErrorResponse } from '@libs/api-gateway';
-import { Product } from '@ptypes/product';
+import { getProduct } from '@src/data';
+import { end } from '@src/db';
+import { Product } from '@src/types/product';
+import logger from '@src/utils/logger';
 
 export const getProductById: APIGatewayProxyHandler = async (event) => {
   const { productId } = event.pathParameters || {};
+  logger.log(`getProductById fired, productId = ${productId}.`);
   if (!productId) {
     return formatJSONErrorResponse(400, 'No product id provided.');
   }
 
-  let products: Product[];
-  const { skipDataProvider } = event.queryStringParameters || {};
-  if (skipDataProvider) {
-    products = defaultProducts;
-  } else {
-    try {
-      products = await getProducts();
-    } catch (err) {
-      return formatJSONErrorResponse(
-        err.code || 500,
-        err.message || 'An error occurred during data loading.',
-      );
-    }
+  let product: Product | null = null;
+  try {
+    product = await getProduct(productId);
+  } catch (err) {
+    logger.error(err);
+    return formatJSONErrorResponse(500, 'An error occurred during data loading.');
+  } finally {
+    end().catch((e) => logger.error(e));
   }
 
-  const product = products.find(({ id }) => productId === id);
   if (!product) {
-    return formatJSONErrorResponse(404, 'Product not found');
+    return formatJSONErrorResponse(404, 'Product not found.');
   }
   return formatJSONResponse(product);
 };
