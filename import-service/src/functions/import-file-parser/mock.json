@@ -1,5 +1,12 @@
 {
   "headers": {
     "Content-Type": "application/json"
-  }
+  },
+  "Records": [{
+    "s3": {
+      "object": {
+        "key": "filename.csv"
+      }
+    }
+  }]
 }

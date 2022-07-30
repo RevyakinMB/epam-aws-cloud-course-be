@@ -28,6 +28,30 @@ const moveFile = async (objectKey: string, success: boolean) => {
   await s3Client.send(deleteCommand);
 };
 
+const parseFile = async (key) => {
+  const s3Client = getS3Client();
+  const command = new GetObjectCommand({
+    Bucket: process.env.BUCKET_NAME,
+    Key: key,
+  });
+  const file = await s3Client.send(command);
+
+  let success = true;
+  try {
+    await new Promise((resolve, reject) => {
+      file.Body.pipe(csv()).on('data', logger.log).on('end', resolve).on('error', reject);
+    });
+  } catch (err) {
+    success = false;
+  }
+
+  try {
+    await moveFile(key, success);
+  } catch (err) {
+    logger.error(err);
+  }
+};
+
 export const importFileParser: Handler<S3Event, { statusCode: number }> = async (
   event: S3Event,
 ) => {
@@ -39,42 +63,14 @@ export const importFileParser: Handler<S3Event, { statusCode: number }> = async 
     return { statusCode: 400 };
   }
 
-  let s3Client;
   try {
-    s3Client = getS3Client();
+    await event.Records.reduce((p, record) => p.then(
+      () => parseFile(record.s3.object.key),
+    ), Promise.resolve());
   } catch (err) {
     logger.error(err);
-    return { statusCode: 500 };
+    return { statusCode: err.$metadata?.httpStatusCode || 500 };
   }
-
-  await event.Records.reduce((p, record) => p.then(async () => {
-    const { key } = record.s3.object;
-    const command = new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: key,
-    });
-    const file = await s3Client.send(command);
-
-    let success = true;
-    try {
-      await new Promise((resolve, reject) => {
-        file.Body.pipe(csv()).on('data', (line: Record<string, unknown>) => {
-          logger.log(line);
-        }).on('end', resolve).on('error', reject);
-      });
-    } catch (err) {
-      success = false;
-    }
-
-    try {
-      await moveFile(key, success);
-    } catch (err) {
-      logger.error(err);
-    }
-  }), Promise.resolve()).catch((err) => {
-    logger.error(err);
-    return { statusCode: 500 };
-  });
 
   return { statusCode: 200 };
 };
