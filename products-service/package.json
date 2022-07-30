@@ -21,7 +21,6 @@
     "@middy/core": "^2.5.3",
     "@middy/http-json-body-parser": "^2.5.3",
     "@types/pg": "^8.6.5",
-    "axios": "^0.27.2",
     "pg": "^8.7.3"
   },
   "devDependencies": {

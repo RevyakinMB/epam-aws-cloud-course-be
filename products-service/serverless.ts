@@ -50,7 +50,7 @@ const serverlessConfiguration: AWS = {
     },
     autoswagger: {
       basePath: '/dev',
-      host: 'vzxop304db.execute-api.eu-west-1.amazonaws.com'
+      host: 'vzxop304db.execute-api.eu-west-1.amazonaws.com',
     },
   },
 };
