@@ -7,6 +7,15 @@ export default {
       http: {
         method: 'get',
         path: 'import',
+        request: {
+          parameters: {
+            querystrings: {
+              name: {
+                required: true,
+              },
+            },
+          },
+        },
       },
     },
   ],

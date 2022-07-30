@@ -14,7 +14,7 @@ const CORS_HEADERS = {
   },
 };
 
-export const formatJSONResponse = (response: Record<string, unknown>, statusCode = 200) => ({
+export const formatJSONResponse = (response: unknown, statusCode = 200) => ({
   body: JSON.stringify(response),
   ...CORS_HEADERS,
   statusCode,
