@@ -20,7 +20,6 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-      // TODO: create bucket using serverless
       BUCKET_NAME: '${self:custom.s3BucketName}',
       REGION_ID: '${self:provider.region}',
     },
@@ -45,6 +44,31 @@ const serverlessConfiguration: AWS = {
             ],
           },
         }],
+      },
+    },
+  },
+  resources: {
+    Resources: {
+      S3FileStorage: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: '${self:custom.s3BucketName}',
+          CorsConfiguration: {
+            CorsRules: [{
+              AllowedMethods: [
+                'PUT',
+                'POST',
+                'DELETE',
+              ],
+              AllowedHeaders: [
+                '*',
+              ],
+              AllowedOrigins: [
+                '*',
+              ],
+            }],
+          },
+        },
       },
     },
   },
