@@ -25,7 +25,7 @@ const FILENAME = 'products.csv';
 const getMockedSignedUrl = (filename) => `https://${
   BUCKET_NAME}.s3.eu-west-1.amazonaws.com/uploaded/${filename}?signed=parameters`;
 
-describe.skip('createProduct', () => {
+describe('createProduct', () => {
   const INITIAL_ENV = process.env;
 
   beforeEach(() => {
