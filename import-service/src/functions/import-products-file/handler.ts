@@ -11,7 +11,7 @@ import { getObjectName } from './helpers';
 
 export const importProductsFile: APIGatewayProxyHandler = async (event) => {
   const { name } = event.queryStringParameters || {};
-  logger.log(`importProductsFile fired, name = ${name}.`);
+  logger.log(`importProductsFile fired, name = ${name || '<empty string>'}.`);
   if (!name) {
     return formatJSONErrorResponse(400, 'No filename provided.');
   }
@@ -25,6 +25,7 @@ export const importProductsFile: APIGatewayProxyHandler = async (event) => {
   try {
     s3Client = getS3Client();
   } catch (err) {
+    logger.error(err);
     return formatJSONErrorResponse(500, err);
   }
 
@@ -37,9 +38,9 @@ export const importProductsFile: APIGatewayProxyHandler = async (event) => {
     const signedUrl = await getSignedUrl(s3Client, command, {
       expiresIn: SIGNED_URL_EXPIRES_IN,
     });
-
     return formatJSONResponse(signedUrl);
   } catch (err) {
+    logger.error(err);
     return formatJSONErrorResponse(500, 'An error occurred during signed URL creation.');
   }
 };

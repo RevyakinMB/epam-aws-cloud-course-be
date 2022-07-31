@@ -42,6 +42,7 @@ const parseFile = async (key) => {
       file.Body.pipe(csv()).on('data', logger.log).on('end', resolve).on('error', reject);
     });
   } catch (err) {
+    logger.error(err);
     success = false;
   }
 

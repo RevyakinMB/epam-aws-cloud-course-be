@@ -2,7 +2,7 @@
   "headers": {
     "Content-Type": "application/json"
   },
-  "pathParameters": {
+  "queryStringParameters": {
     "name": "some-name.csv"
   }
 }
