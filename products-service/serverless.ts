@@ -1,8 +1,9 @@
 import type { AWS } from '@serverless/typescript';
 
+import catalogBatchProcess from '@functions/catalog-batch-process';
 import createProduct from '@functions/create-product';
-import getProductsList from '@functions/get-products-list';
 import getProductById from '@functions/get-product-by-id';
+import getProductsList from '@functions/get-products-list';
 
 import { serverlessDbEnvConfiguration } from './env.serverless';
 
@@ -29,9 +30,34 @@ const serverlessConfiguration: AWS = {
     },
   },
   functions: {
+    catalogBatchProcess,
     createProduct,
     getProductById,
     getProductsList,
+  },
+  resources: {
+    Resources: {
+      CatalogItemsQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'catalog-items-queue',
+          MessageRetentionPeriod: 200,
+          RedrivePolicy: {
+            deadLetterTargetArn: {
+              'Fn::GetAtt': ['CatalogItemsDeadLetterQueue', 'Arn'],
+            },
+            maxReceiveCount: 3,
+          },
+          VisibilityTimeout: 15,
+        },
+      },
+      CatalogItemsDeadLetterQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'catalog-items-dead-letter-queue',
+        },
+      },
+    },
   },
   package: { individually: true },
   custom: {
