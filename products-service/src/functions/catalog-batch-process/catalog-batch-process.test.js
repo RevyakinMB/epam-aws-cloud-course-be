@@ -1,5 +1,16 @@
+import { PublishCommand } from '@aws-sdk/client-sns';
+
 import { createNewProduct } from '@src/data';
+
 import { catalogBatchProcess } from './handler';
+
+jest.mock('@aws-sdk/client-sns', () => ({
+  PublishCommand: jest.fn(() => undefined),
+}));
+
+jest.mock('@libs/sns-client', () => ({
+  getSnsClient: jest.fn(() => ({ send: () => Promise.resolve() })),
+}));
 
 jest.mock('@src/data', () => ({
   createNewProduct: jest.fn(),
@@ -13,9 +24,24 @@ const rejectNthCall = (n) => {
   };
 };
 
+const CATALOG_NOTIFICATION_TOPIC_ARN = 'SNS_ARN';
+
 describe('catalogBatchProcess', () => {
+  const INITIAL_ENV = process.env;
+
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeAll(() => {
+    process.env = {
+      ...INITIAL_ENV,
+      CATALOG_NOTIFICATION_TOPIC_ARN,
+    };
+  });
+
+  afterAll(() => {
+    process.env = INITIAL_ENV;
   });
 
   const regularEvent = {
@@ -42,6 +68,7 @@ describe('catalogBatchProcess', () => {
     expect(result).toEqual({
       batchItemFailures: [],
     });
+    expect(PublishCommand).toHaveBeenCalled();
   });
 
   it('should report back messages with invalid payload', async () => {
@@ -58,6 +85,7 @@ describe('catalogBatchProcess', () => {
         itemIdentifier: event.Records[0].messageId,
       }],
     });
+    expect(PublishCommand).not.toHaveBeenCalled();
   });
 
   it('should report back messages which trigger an error during saving', async () => {

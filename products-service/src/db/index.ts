@@ -61,7 +61,7 @@ export const query = async <T extends QueryResultRow>(
 };
 
 type TxFn = {
-  (tx: PoolClient): Promise<void>;
+  (tx: PoolClient): Promise<unknown>;
 };
 
 export const execInTx = async (txFn: TxFn) => {
