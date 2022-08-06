@@ -1,7 +1,8 @@
 import fs from 'fs';
 import { GetObjectCommand, CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import { getS3Client } from '@libs/s3-client';
-import logger from '@src/utils/logger';
+import { getSqsClient } from '@libs/sqs-client';
 import { importFileParser } from './handler';
 
 jest.mock('@libs/api-gateway', () => ({
@@ -13,11 +14,8 @@ jest.mock('@libs/s3-client', () => ({
   getS3Client: jest.fn(),
 }));
 
-const noop = () => undefined;
-jest.mock('@src/utils/logger', () => ({
-  log: jest.fn(),
-  warn: noop,
-  error: noop,
+jest.mock('@libs/sqs-client', () => ({
+  getSqsClient: jest.fn(),
 }));
 
 jest.mock('@aws-sdk/client-s3', () => ({
@@ -26,7 +24,12 @@ jest.mock('@aws-sdk/client-s3', () => ({
   DeleteObjectCommand: jest.fn(),
 }));
 
+jest.mock('@aws-sdk/client-sqs', () => ({
+  SendMessageCommand: jest.fn(),
+}));
+
 const BUCKET_NAME = 'some-bucket-name';
+const SQS_URL = 'https://sqs.region.amazonaws.com/1323/sqs';
 
 describe('createProduct', () => {
   const INITIAL_ENV = process.env;
@@ -39,6 +42,7 @@ describe('createProduct', () => {
     process.env = {
       ...INITIAL_ENV,
       BUCKET_NAME,
+      SQS_URL,
     };
   });
 
@@ -57,9 +61,12 @@ describe('createProduct', () => {
     });
 
     getS3Client.mockReturnValue({ send });
+    getSqsClient.mockReturnValue({ send });
     GetObjectCommand.mockReturnValue({ type: 'GetObject' });
     CopyObjectCommand.mockReturnValue({ type: 'CopyObject' });
     DeleteObjectCommand.mockReturnValue({ type: 'DeleteObject' });
+    SendMessageCommand.mockReturnValue({ type: 'SendMessage' });
+
     const result = await importFileParser({
       Records: [{
         s3: {
@@ -70,12 +77,8 @@ describe('createProduct', () => {
       }],
     });
     expect(result).toEqual({ statusCode: 200 });
-    expect(send).toHaveBeenNthCalledWith(2, { type: 'CopyObject' });
-    expect(send).toHaveBeenNthCalledWith(3, { type: 'DeleteObject' });
-    expect(logger.log).toHaveBeenNthCalledWith(2, {
-      title: 'Product name #1',
-      description: 'Some product description',
-      price: '5.4',
-    });
+    expect(send).toHaveBeenNthCalledWith(2, { type: 'SendMessage' });
+    expect(send).toHaveBeenNthCalledWith(4, { type: 'CopyObject' });
+    expect(send).toHaveBeenNthCalledWith(5, { type: 'DeleteObject' });
   });
 });
