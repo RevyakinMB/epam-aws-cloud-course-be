@@ -27,6 +27,23 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       ...serverlessDbEnvConfiguration,
+      CATALOG_NOTIFICATION_TOPIC_ARN: {
+        Ref: 'CatalogNotificationTopic',
+      },
+      REGION_ID: { Ref: 'AWS::Region' },
+    },
+    iam: {
+      role: {
+        statements: [{
+          Effect: 'Allow',
+          Action: [
+            'sns:Publish',
+          ],
+          Resource: {
+            Ref: 'CatalogNotificationTopic',
+          },
+        }],
+      },
     },
   },
   functions: {
@@ -57,10 +74,41 @@ const serverlessConfiguration: AWS = {
           QueueName: 'catalog-items-dead-letter-queue',
         },
       },
+      CatalogNotificationTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          // eslint-disable-next-line no-template-curly-in-string
+          TopicName: '${self:custom.catalogUpdateNotificationTopicName}',
+        },
+      },
+      CatalogNotificationSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'maxim_revyakin+prod-service@epam.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'CatalogNotificationTopic',
+          },
+        },
+      },
+      HighPriceCatalogSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'maxim_revyakin+prod-service-pricy@epam.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'CatalogNotificationTopic',
+          },
+          FilterPolicy: {
+            maxPrice: [{ numeric: ['>=', 50] }],
+          },
+        },
+      },
     },
   },
   package: { individually: true },
   custom: {
+    catalogUpdateNotificationTopicName: 'products-catalog-update-notification',
     esbuild: {
       bundle: true,
       minify: false,

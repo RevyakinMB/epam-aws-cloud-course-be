@@ -1,4 +1,6 @@
-import { PoolConfig, Pool } from 'pg';
+import {
+  PoolConfig, Pool, PoolClient, QueryResultRow,
+} from 'pg';
 
 import logger from '@src/utils/logger';
 
@@ -14,7 +16,7 @@ const createPool = () => {
   } = process.env;
   const connectionConfig: PoolConfig = {
     host: PG_HOST,
-    port: parseInt(PG_PORT, 10),
+    port: parseInt(PG_PORT || '', 10),
     database: PG_DATABASE,
     user: PG_USERNAME,
     password: PG_PASSWORD,
@@ -41,7 +43,10 @@ export const end = () => {
   return Promise.resolve();
 };
 
-export const query = async <T>(sql: string, params: Array<string | number | null> = []) => {
+export const query = async <T extends QueryResultRow>(
+  sql: string,
+  params: Array<string | number | null> = [],
+) => {
   if (!pool) {
     await createPool();
   }
@@ -55,7 +60,11 @@ export const query = async <T>(sql: string, params: Array<string | number | null
   }
 };
 
-export const execInTx = async (txFn) => {
+type TxFn = {
+  (tx: PoolClient): Promise<void>;
+};
+
+export const execInTx = async (txFn: TxFn) => {
   if (!pool) {
     await createPool();
   }
