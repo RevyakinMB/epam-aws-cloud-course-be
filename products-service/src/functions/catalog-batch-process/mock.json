@@ -1,0 +1,6 @@
+{
+  "Records": [{
+    "messageId": "id1",
+    "body": "{\"title\": \"New product\"}"
+  }]
+}

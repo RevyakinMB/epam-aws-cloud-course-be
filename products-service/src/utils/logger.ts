@@ -2,19 +2,19 @@
 const JEST = !!process.env.TS_JEST;
 
 export default {
-  error: (...args) => {
+  error: (...args: unknown[]) => {
     if (!JEST) {
       console.error(...args);
     }
   },
 
-  warn: (...args) => {
+  warn: (...args: unknown[]) => {
     if (!JEST) {
       console.warn(...args);
     }
   },
 
-  log: (...args) => {
+  log: (...args: unknown[]) => {
     if (!JEST) {
       console.log(...args);
     }

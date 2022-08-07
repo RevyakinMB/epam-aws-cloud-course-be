@@ -37,5 +37,7 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'linebreak-style': 'off',
     'import/extensions': ['error', 'never'],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
   },
 };

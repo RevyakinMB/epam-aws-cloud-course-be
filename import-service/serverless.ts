@@ -20,8 +20,22 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-      BUCKET_NAME: '${self:custom.s3BucketName}',
-      REGION_ID: '${self:provider.region}',
+      BUCKET_NAME: { Ref: 'S3FileStorage' },
+      REGION_ID: { Ref: 'AWS::Region' },
+      // TODO: secrets manager
+      SQS_URL: {
+        'Fn::Join': [
+          '',
+          [
+            'https://sqs.',
+            { Ref: 'AWS::Region' },
+            '.amazonaws.com/',
+            { Ref: 'AWS::AccountId' },
+            '/',
+            '${self:custom.sqsName}',
+          ],
+        ],
+      },
     },
     iam: {
       role: {
@@ -35,11 +49,31 @@ const serverlessConfiguration: AWS = {
           ],
           Resource: {
             'Fn::Join': [
-              '',
+              '/',
               [
-                'arn:aws:s3:::',
-                '${self:custom.s3BucketName}',
-                '/*',
+                {
+                  'Fn::GetAtt': [
+                    'S3FileStorage',
+                    'Arn',
+                  ],
+                },
+                '*',
+              ],
+            ],
+          },
+        }, {
+          Effect: 'Allow',
+          Action: [
+            'sqs:SendMessage',
+          ],
+          Resource: {
+            'Fn::Join': [
+              ':',
+              [
+                'arn:aws:sqs',
+                { Ref: 'AWS::Region' },
+                { Ref: 'AWS::AccountId' },
+                '${self:custom.sqsName}',
               ],
             ],
           },
@@ -79,6 +113,7 @@ const serverlessConfiguration: AWS = {
   package: { individually: true },
   custom: {
     s3BucketName: 'epam-clouddevcourse-products',
+    sqsName: 'catalog-items-queue',
     esbuild: {
       bundle: true,
       minify: false,
