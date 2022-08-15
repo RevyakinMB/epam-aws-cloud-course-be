@@ -66,6 +66,7 @@ const serverlessConfiguration: AWS = {
             maxReceiveCount: 3,
           },
           VisibilityTimeout: 15,
+          ReceiveMessageWaitTimeSeconds: 10,
         },
       },
       CatalogItemsDeadLetterQueue: {
