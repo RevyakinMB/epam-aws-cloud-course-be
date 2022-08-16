@@ -14,6 +14,15 @@ const serverlessConfiguration: AWS = {
     region: 'eu-west-1',
     stage: 'dev',
     apiGateway: {
+      restApiId: {
+        Ref: 'RestApiGateway',
+      },
+      restApiRootResourceId: {
+        'Fn::GetAtt': [
+          'RestApiGateway',
+          'RootResourceId',
+        ],
+      },
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
     },
@@ -102,6 +111,38 @@ const serverlessConfiguration: AWS = {
               ],
             }],
           },
+        },
+      },
+      GatewayResponseDefault4XX: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+          },
+          ResponseType: 'DEFAULT_4XX',
+          RestApiId: {
+            Ref: 'RestApiGateway',
+          },
+        },
+      },
+      GatewayResponseDefault5XX: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+          },
+          ResponseType: 'DEFAULT_5XX',
+          RestApiId: {
+            Ref: 'RestApiGateway',
+          },
+        },
+      },
+      RestApiGateway: {
+        Type: 'AWS::ApiGateway::RestApi',
+        Properties: {
+          Name: 'RestApiGateway',
         },
       },
     },
